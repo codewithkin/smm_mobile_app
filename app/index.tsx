@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, TextInput } from "react-native-paper";
+import { ActivityIndicator, Button, TextInput } from "react-native-paper";
 import { Toast } from "toastify-react-native";
 import axios from "axios";
 import { urls } from "@/constants/urls";
@@ -17,10 +17,19 @@ export default function index() {
 
   const handleSignIn = async () => {
     try {
-      // Make a request to the backend
-      const res = await axios.get(`${urls.backendUrl}/auth/login`);
+      setLoading(true);
 
-      console.log("Response from backend: ", res.data);
+      // Make a request to the backend
+      const res = await axios.post(
+        `${urls.backendUrl}/auth/login`,
+        {
+          username,
+          password,
+        },
+        {
+          validateStatus: (status) => status < 500, // Treat 4xx as non-throwing
+        },
+      );
 
       // If the request was not successful
       if (res.status !== 200) {
@@ -34,6 +43,8 @@ export default function index() {
 
       // Show an error toast
       Toast.error("Sorry, we couldn't sign you in...please try again later...");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -61,8 +72,16 @@ export default function index() {
             value={password}
             onChangeText={(password) => setPassword(password)}
           />
-          <Button style={styles.submitButton} mode="contained">
-            Login
+          <Button
+            onPress={handleSignIn}
+            disabled={username.length < 1 || password.length < 1 || loading}
+            style={styles.submitButton}
+            mode="contained"
+          >
+            {loading && (
+              <ActivityIndicator style={{ marginRight: 4 }} size={14} />
+            )}
+            {loading ? "Logging you in..." : "Login"}
           </Button>
         </View>
       </View>
