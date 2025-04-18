@@ -5,7 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import { PaperProvider, DefaultTheme } from "react-native-paper";
-import ToastManager from "toastify-react-native/components/ToastManager";
+import ToastManager from "toastify-react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
