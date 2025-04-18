@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.codewithkin.smm-mobile-app"
     },
     "plugins": [
       "expo-router",
@@ -33,6 +34,9 @@
       "eas": {
         "projectId": "1ecbe08e-7c32-42e0-9c09-2ae5612faa8d"
       }
+    },
+    "android": {
+      "package": "com.codewithkin.smm_mobile_app"
     }
   }
 }

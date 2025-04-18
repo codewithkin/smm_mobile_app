@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ActivityIndicator, Button, TextInput } from "react-native-paper";
 import { Toast } from "toastify-react-native";
@@ -8,6 +8,7 @@ import { urls } from "@/constants/urls";
 import { router } from "expo-router";
 import { MotiView } from "moti";
 import { colors } from "@/constants/colors";
+import { storage } from "@/lib/mmkv-storage";
 
 export default function index() {
   // Track form state
@@ -38,8 +39,14 @@ export default function index() {
         return Toast.error(res.data.message);
       }
 
+      // Update the mmkv-store with the user's info
+      storage.set("user.username", res.data.user.username);
+      storage.set("user.role", res.data.user.role);
+      storage.set("user.id", res.data.user.id);
+      storage.set("user.createdAt", res.data.user.createdAt);
+
       // Otherwise...redirect to dashboard
-      router.push("/dashboard");
+      router.push("/(tabs)");
     } catch (e) {
       console.log("An error occured while signing user in: ", e);
 
@@ -49,6 +56,16 @@ export default function index() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // Check if the user is logged in
+    const existingUsername = storage.getString("user.name"); // 'Marc'
+
+    if (existingUsername) {
+      // Redirect to the tabs page
+      return router.push("/(tabs)");
+    }
+  }, []);
 
   return (
     <SafeAreaView>
