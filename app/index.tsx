@@ -6,6 +6,7 @@ import { Toast } from "toastify-react-native";
 import axios from "axios";
 import { urls } from "@/constants/urls";
 import { router } from "expo-router";
+import { MotiView } from "moti";
 
 export default function index() {
   // Track form state
@@ -50,41 +51,46 @@ export default function index() {
 
   return (
     <SafeAreaView>
-      <View style={styles.container}>
-        <Text style={styles.heading}>Login to Smart Switch Mobile</Text>
+      <MotiView
+        from={{ opacity: 0, translateY: 40 }}
+        animate={{ opacity: 1, translateY: 0 }}
+      >
+        <View style={styles.container}>
+          <Text style={styles.heading}>Login to Smart Switch Mobile</Text>
 
-        {/* Form */}
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            label="Username"
-            mode="outlined"
-            placeholder="Sir Prosper"
-            value={username}
-            onChangeText={(username) => setUsername(username)}
-          />
-          <TextInput
-            style={styles.input}
-            label="Password"
-            mode="outlined"
-            placeholder="Enter your password"
-            secureTextEntry={true}
-            value={password}
-            onChangeText={(password) => setPassword(password)}
-          />
-          <Button
-            onPress={handleSignIn}
-            disabled={username.length < 1 || password.length < 1 || loading}
-            style={styles.submitButton}
-            mode="contained"
-          >
-            {loading && (
-              <ActivityIndicator style={{ marginRight: 4 }} size={14} />
-            )}
-            {loading ? "Logging you in..." : "Login"}
-          </Button>
+          {/* Form */}
+          <View style={styles.form}>
+            <TextInput
+              style={styles.input}
+              label="Username"
+              mode="outlined"
+              placeholder="Sir Prosper"
+              value={username}
+              onChangeText={(username) => setUsername(username)}
+            />
+            <TextInput
+              style={styles.input}
+              label="Password"
+              mode="outlined"
+              placeholder="Enter your password"
+              secureTextEntry={true}
+              value={password}
+              onChangeText={(password) => setPassword(password)}
+            />
+            <Button
+              onPress={handleSignIn}
+              disabled={username.length < 1 || password.length < 1 || loading}
+              style={styles.submitButton}
+              mode="contained"
+            >
+              {loading && (
+                <ActivityIndicator style={{ marginRight: 4 }} size={14} />
+              )}
+              {loading ? "Logging you in..." : "Login"}
+            </Button>
+          </View>
         </View>
-      </View>
+      </MotiView>
     </SafeAreaView>
   );
 }

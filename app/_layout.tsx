@@ -1,3 +1,7 @@
+// Animation
+import "react-native-reanimated";
+import "react-native-gesture-handler";
+
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
