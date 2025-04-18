@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import { PaperProvider, DefaultTheme } from "react-native-paper";
 import ToastManager from "toastify-react-native";
+import { colors } from "../constants/colors";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -18,8 +19,8 @@ const lightTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: "#6200ee",
-    accent: "#03dac4",
+    primary: colors.primary,
+    accent: colors.secondary,
     background: "#ffffff",
     surface: "#ffffff",
     text: "#000000",
