@@ -2,10 +2,40 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, TextInput } from "react-native-paper";
+import { Toast } from "toastify-react-native";
+import axios from "axios";
+import { urls } from "@/constants/urls";
+import { router } from "expo-router";
 
 export default function index() {
+  // Track form state
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  // Track loading state
+  const [loading, setLoading] = useState(false);
+
+  const handleSignIn = async () => {
+    try {
+      // Make a request to the backend
+      const res = await axios.get(`${urls.backendUrl}/auth/login`);
+
+      console.log("Response from backend: ", res.data);
+
+      // If the request was not successful
+      if (res.status !== 200) {
+        return Toast.error(res.data.message);
+      }
+
+      // Otherwise...redirect to dashboard
+      router.push("/dashboard");
+    } catch (e) {
+      console.log("An error occured while signing user in: ", e);
+
+      // Show an error toast
+      Toast.error("Sorry, we couldn't sign you in...please try again later...");
+    }
+  };
 
   return (
     <SafeAreaView>
