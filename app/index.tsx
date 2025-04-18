@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 32,
-    fontWeight: "600",
+    fontWeight: "800",
     textAlign: "center",
   },
   form: {
