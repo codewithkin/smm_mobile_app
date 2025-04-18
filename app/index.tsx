@@ -7,6 +7,7 @@ import axios from "axios";
 import { urls } from "@/constants/urls";
 import { router } from "expo-router";
 import { MotiView } from "moti";
+import { colors } from "@/constants/colors";
 
 export default function index() {
   // Track form state
@@ -56,7 +57,10 @@ export default function index() {
         animate={{ opacity: 1, translateY: 0 }}
       >
         <View style={styles.container}>
-          <Text style={styles.heading}>Login to Smart Switch Mobile</Text>
+          <Text style={styles.heading}>
+            Login to{" "}
+            <Text style={{ color: colors.secondary }}>Smart Switch Mobile</Text>
+          </Text>
 
           {/* Form */}
           <View style={styles.form}>
