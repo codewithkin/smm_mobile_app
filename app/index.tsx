@@ -7,6 +7,9 @@ export default function index() {
     <SafeAreaView>
       <View style={styles.container}>
         <Text style={styles.heading}>Login to Smart Switch Mobile</Text>
+
+        {/* Form */}
+        <View style={styles.form}></View>
       </View>
     </SafeAreaView>
   );
@@ -23,5 +26,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "600",
     textAlign: "center",
+  },
+  form: {
+    gap: 12,
+    paddingVertical: 12,
   },
 });
