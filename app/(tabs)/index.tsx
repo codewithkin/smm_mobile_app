@@ -19,6 +19,9 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       try {
         const res = await axios.get(`${urls.backendUrl}/data`);
+
+        console.log("Backend data: ", res.data);
+
         setData(res.data);
       } catch (e) {
         console.error("Error fetching dashboard data:", e);
