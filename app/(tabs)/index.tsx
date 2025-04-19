@@ -11,6 +11,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "react-native-paper";
 import SalesLineChart from "@/components/dashboard/SalesLineChart";
 import ProductsByCategoryChart from "@/components/dashboard/ProductsByCategoryChart";
+import CustomersTable from "@/components/dashboard/CustomersTable";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -147,6 +148,8 @@ export default function Dashboard() {
                     <ProductsByCategoryChart products={data.products} />
                   </ScrollView>
                 )}
+
+                {data?.customers && <CustomersTable data={data.customers} />}
               </View>
             )}
           </MotiView>
