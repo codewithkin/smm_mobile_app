@@ -59,7 +59,7 @@ export default function index() {
 
   useEffect(() => {
     // Check if the user is logged in
-    const existingUsername = storage.getString("user.name"); // 'Marc'
+    const existingUsername = storage.getString("user.username");
 
     if (existingUsername) {
       // Redirect to the tabs page
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   heading: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: "800",
     textAlign: "center",
   },
