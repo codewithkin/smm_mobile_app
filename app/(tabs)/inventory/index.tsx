@@ -22,6 +22,7 @@ import {
 } from "react-native-paper";
 import axios from "axios";
 import { urls } from "@/constants/urls";
+import { Toast } from "toastify-react-native";
 
 interface Product {
   id: string;
@@ -72,7 +73,7 @@ export default function InventoryPage() {
     let updated = [...products];
     if (searchQuery) {
       updated = updated.filter((p) =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase())
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
     setFiltered(updated);
@@ -87,6 +88,8 @@ export default function InventoryPage() {
           try {
             await axios.delete(`${urls.backendUrl}/products/${id}`);
             setProducts((prev) => prev.filter((p) => p.id !== id));
+            Toast.success("Product deleted successfully!");
+            fetchProducts(); // Re-fetch the items from DB
           } catch {
             Alert.alert("Error", "Failed to delete product");
           }
@@ -130,9 +133,7 @@ export default function InventoryPage() {
 
               <Text style={styles.brandText}>{item.brand}</Text>
               <Text style={styles.conditionText}>
-                {item.condition === "refurbished"
-                  ? "Refurbished"
-                  : "Brand New"}
+                {item.condition === "refurbished" ? "Refurbished" : "Brand New"}
               </Text>
 
               <View style={styles.priceStockRow}>
@@ -142,7 +143,10 @@ export default function InventoryPage() {
             </Card.Content>
 
             <Card.Actions style={styles.cardActions}>
-              <Button mode="outlined" onPress={() => console.log("Edit", item.id)}>
+              <Button
+                mode="outlined"
+                onPress={() => console.log("Edit", item.id)}
+              >
                 Edit
               </Button>
               <Button
