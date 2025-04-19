@@ -1,5 +1,6 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import React, { useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { DataTable, Text } from "react-native-paper";
 import moment from "moment";
 import ChartContainer from "../shared/ChartContainer";
 
@@ -17,7 +18,18 @@ interface Props {
   data: Customer[];
 }
 
+const rowsPerPageOptions = [5, 10, 15];
+
 const CustomersTable: React.FC<Props> = ({ data }) => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
+
+  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const paginatedData = data.slice(
+    page * rowsPerPage,
+    (page + 1) * rowsPerPage,
+  );
+
   if (!data || data.length === 0) {
     return (
       <ChartContainer>
@@ -31,48 +43,66 @@ const CustomersTable: React.FC<Props> = ({ data }) => {
   return (
     <ChartContainer>
       <ScrollView horizontal>
-        <View>
-          {/* Table Header */}
-          <View style={[styles.row, styles.headerRow]}>
-            <Text style={[styles.cell, styles.headerCell, { width: 150 }]}>
-              Name
-            </Text>
-            <Text style={[styles.cell, styles.headerCell, { width: 200 }]}>
-              Address
-            </Text>
-            <Text style={[styles.cell, styles.headerCell, { width: 100 }]}>
-              Spent ($)
-            </Text>
-            <Text style={[styles.cell, styles.headerCell, { width: 160 }]}>
-              Customer Since
-            </Text>
-            <Text style={[styles.cell, styles.headerCell, { width: 160 }]}>
-              Last Purchase
-            </Text>
-          </View>
+        <View style={{ maxHeight: 350 }}>
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title style={{ width: 150 }}>Name</DataTable.Title>
+              <DataTable.Title style={{ width: 200 }}>Address</DataTable.Title>
+              <DataTable.Title style={{ width: 100 }}>
+                Spent ($)
+              </DataTable.Title>
+              <DataTable.Title style={{ width: 160 }}>
+                Customer Since
+              </DataTable.Title>
+              <DataTable.Title style={{ width: 160 }}>
+                Last Purchase
+              </DataTable.Title>
+            </DataTable.Header>
 
-          {/* Table Body */}
-          {data.map((customer) => (
-            <View key={customer.id} style={styles.row}>
-              <Text style={[styles.cell, { width: 150 }]}>{customer.name}</Text>
-              <Text style={[styles.cell, { width: 200 }]}>
-                {customer.address}
-              </Text>
-              <Text style={[styles.cell, { width: 100 }]}>
-                {customer.spent ?? 0}
-              </Text>
-              <Text style={[styles.cell, { width: 160 }]}>
-                {customer.customerSince
-                  ? moment(customer.customerSince).format("MMM D, YYYY")
-                  : "-"}
-              </Text>
-              <Text style={[styles.cell, { width: 160 }]}>
-                {customer.lastPurchase
-                  ? moment(customer.lastPurchase).format("MMM D, YYYY")
-                  : "-"}
-              </Text>
+            <ScrollView style={{ maxHeight: 250 }}>
+              {paginatedData.map((customer) => (
+                <DataTable.Row key={customer.id}>
+                  <DataTable.Cell style={{ width: 150 }}>
+                    {customer.name}
+                  </DataTable.Cell>
+                  <DataTable.Cell style={{ width: 200 }}>
+                    {customer.address}
+                  </DataTable.Cell>
+                  <DataTable.Cell style={{ width: 100 }}>
+                    {customer.spent ?? 0}
+                  </DataTable.Cell>
+                  <DataTable.Cell style={{ width: 160 }}>
+                    {customer.customerSince
+                      ? moment(customer.customerSince).format("MMM D, YYYY")
+                      : "-"}
+                  </DataTable.Cell>
+                  <DataTable.Cell style={{ width: 160 }}>
+                    {customer.lastPurchase
+                      ? moment(customer.lastPurchase).format("MMM D, YYYY")
+                      : "-"}
+                  </DataTable.Cell>
+                </DataTable.Row>
+              ))}
+            </ScrollView>
+
+            {/* Pagination aligned to start */}
+            <View style={{ alignItems: "flex-start" }}>
+              <DataTable.Pagination
+                page={page}
+                numberOfPages={totalPages}
+                onPageChange={(newPage) => setPage(newPage)}
+                label={`${page * rowsPerPage + 1}-${Math.min(
+                  (page + 1) * rowsPerPage,
+                  data.length,
+                )} of ${data.length}`}
+                optionsPerPage={rowsPerPageOptions}
+                itemsPerPage={rowsPerPage}
+                setItemsPerPage={setRowsPerPage}
+                showFastPaginationControls
+                optionsLabel={"Rows per page"}
+              />
             </View>
-          ))}
+          </DataTable>
         </View>
       </ScrollView>
     </ChartContainer>
@@ -87,23 +117,6 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
     color: "#555",
-  },
-  row: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-  },
-  headerRow: {
-    backgroundColor: "#f3f4f6",
-  },
-  cell: {
-    paddingHorizontal: 8,
-    fontSize: 13,
-  },
-  headerCell: {
-    fontWeight: "bold",
   },
 });
 
