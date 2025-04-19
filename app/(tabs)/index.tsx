@@ -58,7 +58,7 @@ export default function Dashboard() {
                 {/* Customers */}
                 <LinearGradient
                   colors={[colors.red, colors.purple]}
-                  style={[styles.gradientCard, {width: "45%"}]}
+                  style={[styles.gradientCard, {width: "47%"}]}
                 >
                   {/* Icon */}
                   <FontAwesome6 name="bag-shopping" size={32} color="white" />
@@ -77,7 +77,7 @@ export default function Dashboard() {
                 {/* Products */}
                 <LinearGradient
                   colors={[colors.turquoise, colors.green]}
-                  style={[styles.gradientCard, {width: "45%"}]}
+                  style={[styles.gradientCard, {width: "47%"}]}
                     
                 >
                   {/* Icon */}
@@ -174,6 +174,8 @@ const styles = StyleSheet.create({
   },
   twinGrid: {
     flexDirection: "row",
-    gap: 16
-  }
+    gap: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
