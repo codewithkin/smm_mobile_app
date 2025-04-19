@@ -3,18 +3,14 @@ import { FAB } from "react-native-paper";
 import { StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
-interface NewStuffFABProps {
-  show: boolean;
-}
-
-const NewStuffFAB: React.FC<NewStuffFABProps> = ({ show }) => {
+const NewStuffFAB = () => {
   const [open, setOpen] = useState(false);
 
   const router = useRouter();
 
   return (
     <FAB.Group
-      visible={show}
+      visible={true}
       open={open}
       icon={open ? "close" : "plus"}
       actions={[
