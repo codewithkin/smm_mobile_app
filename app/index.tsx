@@ -107,7 +107,7 @@ export default function index() {
               {loading && (
                 <ActivityIndicator style={{ marginRight: 4 }} size={14} />
               )}
-              {loading ? "Logging you in..." : "Login"}
+              {!loading && "Login"}
             </Button>
           </View>
         </View>
