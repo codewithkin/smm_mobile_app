@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import {
   Modal,
   View,
-  Text,
-  TextInput,
-  Button,
-  ActivityIndicator,
   Alert,
+  ActivityIndicator,
+  StyleSheet,
+  Platform,
 } from "react-native";
+import { TextInput, Button, Text, IconButton, Card } from "react-native-paper";
 import axios from "axios";
 import { urls } from "@/constants/urls";
 
@@ -68,7 +68,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
     try {
       const response = await axios.put(
         `${urls.backendUrl}/products/${editedProduct.id}`,
-        editedProduct,
+        editedProduct
       );
       onProductUpdated(response.data);
       onClose(); // Close the modal after saving
@@ -81,50 +81,103 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
 
   return (
     <Modal visible={visible} onRequestClose={onClose} animationType="slide">
-      <View style={{ padding: 20, flex: 1 }}>
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>Edit Product</Text>
+      <View style={styles.modalContainer}>
+        <Card style={styles.card}>
+          <Card.Content>
+            <Text style={styles.modalTitle}>Edit Product</Text>
+            {editedProduct ? (
+              <>
+                <TextInput
+                  label="Product Name"
+                  style={styles.input}
+                  value={editedProduct.name}
+                  onChangeText={(text) => handleInputChange("name", text)}
+                />
+                <TextInput
+                  label="Brand"
+                  style={styles.input}
+                  value={editedProduct.brand}
+                  onChangeText={(text) => handleInputChange("brand", text)}
+                />
+                <TextInput
+                  label="Price"
+                  style={styles.input}
+                  value={editedProduct.price.toString()}
+                  onChangeText={(text) =>
+                    handleInputChange("price", parseFloat(text).toString())
+                  }
+                  keyboardType="numeric"
+                />
+                <TextInput
+                  label="Description"
+                  style={styles.input}
+                  value={editedProduct.description}
+                  onChangeText={(text) => handleInputChange("description", text)}
+                  multiline
+                  numberOfLines={4}
+                />
 
-        {editedProduct ? (
-          <>
-            <TextInput
-              style={{ borderBottomWidth: 1, marginTop: 20 }}
-              value={editedProduct.name}
-              onChangeText={(text) => handleInputChange("name", text)}
-              placeholder="Product Name"
-            />
-            <TextInput
-              style={{ borderBottomWidth: 1, marginTop: 10 }}
-              value={editedProduct.brand}
-              onChangeText={(text) => handleInputChange("brand", text)}
-              placeholder="Brand"
-            />
-            <TextInput
-              style={{ borderBottomWidth: 1, marginTop: 10 }}
-              value={editedProduct.price.toString()}
-              onChangeText={(text) =>
-                handleInputChange("price", parseFloat(text).toString())
-              }
-              placeholder="Price"
-              keyboardType="numeric"
-            />
-            <TextInput
-              style={{ borderBottomWidth: 1, marginTop: 10 }}
-              value={editedProduct.description}
-              onChangeText={(text) => handleInputChange("description", text)}
-              placeholder="Description"
-              multiline
-            />
-            {/* Add more fields here if necessary */}
+                {/* Add more fields here if necessary */}
+              </>
+            ) : (
+              <ActivityIndicator size="large" style={styles.loading} />
+            )}
 
-            <View style={{ marginTop: 20 }}>
-              <Button title="Save Changes" onPress={handleSave} />
-              {loading && <ActivityIndicator style={{ marginTop: 10 }} />}
-            </View>
-          </>
-        ) : (
-          <ActivityIndicator size="large" />
-        )}
+            <Button
+              mode="contained"
+              onPress={handleSave}
+              loading={loading}
+              style={styles.saveButton}
+            >
+              Save Changes
+            </Button>
+          </Card.Content>
+        </Card>
+        <IconButton
+          icon="close"
+          size={24}
+          onPress={onClose}
+          style={styles.closeButton}
+        />
       </View>
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+  card: {
+    width: "100%",
+    maxWidth: 400,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  input: {
+    marginBottom: 12,
+  },
+  loading: {
+    marginTop: 20,
+  },
+  saveButton: {
+    marginTop: 20,
+    paddingVertical: 8,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+  },
+});
