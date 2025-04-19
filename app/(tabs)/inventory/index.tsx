@@ -51,7 +51,6 @@ export default function InventoryPage() {
   const [view, setView] = useState("card");
   const [searchQuery, setSearchQuery] = useState("");
   const [filtered, setFiltered] = useState<Product[]>([]);
-  const [filter, setFilter] = useState("");
 
   const fetchProducts = async () => {
     try {
@@ -71,22 +70,13 @@ export default function InventoryPage() {
 
   useEffect(() => {
     let updated = [...products];
-    if (filter === "new") {
-      updated = updated.filter((p) => p.isNewArrival);
-    } else if (filter === "most") {
-      updated = updated.sort(
-        (a, b) => (b.purchases?.length || 0) - (a.purchases?.length || 0),
-      );
-    } else if (filter === "price") {
-      updated = updated.sort((a, b) => a.price - b.price);
-    }
     if (searchQuery) {
       updated = updated.filter((p) =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()),
+        p.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
     setFiltered(updated);
-  }, [filter, searchQuery]);
+  }, [searchQuery]);
 
   const deleteItem = (id: string) => {
     Alert.alert("Confirm", "Delete this product?", [
@@ -140,7 +130,9 @@ export default function InventoryPage() {
 
               <Text style={styles.brandText}>{item.brand}</Text>
               <Text style={styles.conditionText}>
-                {item.condition === "refurbished" ? "Refurbished" : "Brand New"}
+                {item.condition === "refurbished"
+                  ? "Refurbished"
+                  : "Brand New"}
               </Text>
 
               <View style={styles.priceStockRow}>
@@ -150,10 +142,7 @@ export default function InventoryPage() {
             </Card.Content>
 
             <Card.Actions style={styles.cardActions}>
-              <Button
-                mode="outlined"
-                onPress={() => console.log("Edit", item.id)}
-              >
+              <Button mode="outlined" onPress={() => console.log("Edit", item.id)}>
                 Edit
               </Button>
               <Button
@@ -246,37 +235,6 @@ export default function InventoryPage() {
           ]}
         />
 
-        <View style={styles.filters}>
-          <Chip
-            selected={filter === "new"}
-            onPress={() => setFilter("new")}
-            style={styles.chip}
-          >
-            New
-          </Chip>
-          <Chip
-            selected={filter === "most"}
-            onPress={() => setFilter("most")}
-            style={styles.chip}
-          >
-            Most Bought
-          </Chip>
-          <Chip
-            selected={filter === "price"}
-            onPress={() => setFilter("price")}
-            style={styles.chip}
-          >
-            Price
-          </Chip>
-          <Chip
-            selected={filter === ""}
-            onPress={() => setFilter("")}
-            style={styles.chip}
-          >
-            All
-          </Chip>
-        </View>
-
         <View style={styles.content}>
           {view === "card" && renderCardView()}
           {view === "table" && renderTableView()}
@@ -358,15 +316,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
     marginTop: 8,
-  },
-  filters: {
-    flexDirection: "row",
-    gap: 8,
-    marginTop: 12,
-    flexWrap: "wrap",
-  },
-  chip: {
-    marginRight: 8,
   },
   badgeContainer: {
     flexDirection: "row",
