@@ -5,7 +5,7 @@ import { MotiView } from "moti";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { urls } from "@/constants/urls";
-import { Text } from "react-native-paper";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -51,16 +51,12 @@ export default function Dashboard() {
             </View>
           ) : (
             <View style={styles.dataContainer}>
-              <Text variant="titleMedium">
-                Total Customers: {data?.customers.length}
-              </Text>
-              <Text variant="titleMedium">
-                Total Products: {data?.products.length}
-              </Text>
-              <Text variant="titleMedium">
-                Total Sales: {data?.checkouts.length}
-              </Text>
-              {/* Add more insights or cards here */}
+              {/* All-time sales */}
+              <LinearGradient
+                // Background Linear Gradient
+                colors={["rgba(0,0,0,0.8)", "transparent"]}
+                style={styles.gradientCard}
+              />
             </View>
           )}
         </MotiView>
@@ -93,4 +89,5 @@ const styles = StyleSheet.create({
   dataContainer: {
     gap: 12,
   },
+  gradientCard: {},
 });
