@@ -5,7 +5,6 @@ import Fontisto from "@expo/vector-icons/Fontisto";
 import { Link } from "expo-router";
 import { urls } from "@/constants/urls";
 import axios from "axios";
-import { Button } from "react-native-paper";
 
 export default function TopBar() {
   // Fetch all notifications

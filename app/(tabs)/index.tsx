@@ -1,5 +1,4 @@
-import { Text } from "react-native-paper";
-import TopBar from "./components/TopBar";
+import TopBar from "../../components/TopBar";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { colors } from "@/constants/colors";
 
