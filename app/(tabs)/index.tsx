@@ -10,6 +10,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "react-native-paper";
 import SalesLineChart from "@/components/dashboard/SalesLineChart";
+import ProductsByCategoryChart from "@/components/dashboard/ProductsByCategoryChart";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -137,6 +138,13 @@ export default function Dashboard() {
                 {data.checkouts && (
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     <SalesLineChart sales={data.checkouts} />
+                  </ScrollView>
+                )}
+
+                {/* Bar chart showing products by category */}
+                {data.products && (
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    <ProductsByCategoryChart products={data.products} />
                   </ScrollView>
                 )}
               </View>

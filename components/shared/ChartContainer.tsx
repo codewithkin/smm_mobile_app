@@ -13,5 +13,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 24,
     borderStyle: "dashed",
+    width: "100%",
   },
 });
