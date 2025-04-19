@@ -9,6 +9,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "react-native-paper";
+import SalesLineChart from "@/components/dashboard/SalesLineChart";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -58,7 +59,7 @@ export default function Dashboard() {
                 {/* Customers */}
                 <LinearGradient
                   colors={[colors.red, colors.purple]}
-                  style={[styles.gradientCard, {width: "47%"}]}
+                  style={[styles.gradientCard, { width: "47%" }]}
                 >
                   {/* Icon */}
                   <FontAwesome6 name="bag-shopping" size={32} color="white" />
@@ -77,8 +78,7 @@ export default function Dashboard() {
                 {/* Products */}
                 <LinearGradient
                   colors={[colors.turquoise, colors.green]}
-                  style={[styles.gradientCard, {width: "47%"}]}
-                    
+                  style={[styles.gradientCard, { width: "47%" }]}
                 >
                   {/* Icon */}
                   <FontAwesome6 name="bag-shopping" size={32} color="white" />
@@ -117,6 +117,9 @@ export default function Dashboard() {
                 {/* Title */}
                 <Text style={styles.cardHeading}>Sales</Text>
               </LinearGradient>
+
+              {/* Line chart showing sales */}
+              {data.checkouts && <SalesLineChart sales={data.checkouts} />}
             </View>
           )}
         </MotiView>
