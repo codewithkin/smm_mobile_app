@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ActivityIndicator, Button, TextInput } from "react-native-paper";
@@ -74,6 +74,10 @@ export default function index() {
         animate={{ opacity: 1, translateY: 0 }}
       >
         <View style={styles.container}>
+          <Image
+            style={styles.logo}
+            source={require("../assets/images/icon.png")}
+          />
           <Text style={styles.heading}>
             Login to{" "}
             <Text style={{ color: colors.secondary }}>Smart Switch Mobile</Text>
@@ -139,5 +143,10 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: 8,
+  },
+  logo: {
+    width: 96,
+    height: 96,
+    marginBottom: 8,
   },
 });
