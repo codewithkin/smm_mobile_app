@@ -12,6 +12,7 @@ import { Text } from "react-native-paper";
 import SalesLineChart from "@/components/dashboard/SalesLineChart";
 import ProductsByCategoryChart from "@/components/dashboard/ProductsByCategoryChart";
 import CustomersTable from "@/components/dashboard/CustomersTable";
+import ReceiptsTable from "@/components/dashboard/ReceiptsTable";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -150,6 +151,8 @@ export default function Dashboard() {
                 )}
 
                 {data?.customers && <CustomersTable data={data.customers} />}
+
+                {data?.receipts && <ReceiptsTable data={data.receipts} />}
               </View>
             )}
           </MotiView>

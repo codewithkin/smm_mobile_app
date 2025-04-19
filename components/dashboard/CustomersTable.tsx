@@ -95,7 +95,6 @@ const CustomersTable: React.FC<Props> = ({ data }) => {
                   (page + 1) * rowsPerPage,
                   data.length,
                 )} of ${data.length}`}
-                optionsPerPage={rowsPerPageOptions}
                 itemsPerPage={rowsPerPage}
                 setItemsPerPage={setRowsPerPage}
                 showFastPaginationControls
