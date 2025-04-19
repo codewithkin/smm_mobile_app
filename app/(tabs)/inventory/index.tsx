@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,16 +13,15 @@ import {
   SegmentedButtons,
   Card,
   Button,
-  Menu,
   IconButton,
   DataTable,
   Searchbar,
-  Chip,
   Badge,
 } from "react-native-paper";
 import axios from "axios";
 import { urls } from "@/constants/urls";
 import { Toast } from "toastify-react-native";
+import { EditProductModal } from "@/components/inventory/EditProductModal";
 
 interface Product {
   id: string;
@@ -52,6 +51,8 @@ export default function InventoryPage() {
   const [view, setView] = useState("card");
   const [searchQuery, setSearchQuery] = useState("");
   const [filtered, setFiltered] = useState<Product[]>([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const fetchProducts = async () => {
     try {
@@ -96,6 +97,20 @@ export default function InventoryPage() {
         },
       },
     ]);
+  };
+
+  const handleEdit = (product: Product) => {
+    setSelectedProduct(product);
+    setModalVisible(true);
+  };
+
+  const handleProductUpdated = (updatedProduct: Product) => {
+    setProducts((prev) =>
+      prev.map((item) =>
+        item.id === updatedProduct.id ? updatedProduct : item,
+      ),
+    );
+    fetchProducts(); // Re-fetch to ensure the product list stays up to date
   };
 
   const renderCardView = () => {
@@ -143,10 +158,7 @@ export default function InventoryPage() {
             </Card.Content>
 
             <Card.Actions style={styles.cardActions}>
-              <Button
-                mode="outlined"
-                onPress={() => console.log("Edit", item.id)}
-              >
+              <Button mode="outlined" onPress={() => handleEdit(item)}>
                 Edit
               </Button>
               <Button
@@ -159,61 +171,6 @@ export default function InventoryPage() {
               </Button>
             </Card.Actions>
           </Card>
-        )}
-      />
-    );
-  };
-
-  const renderTableView = () => {
-    return (
-      <DataTable>
-        <DataTable.Header>
-          <DataTable.Title>Name</DataTable.Title>
-          <DataTable.Title numeric>Price</DataTable.Title>
-          <DataTable.Title numeric>Stock</DataTable.Title>
-          <DataTable.Title>Action</DataTable.Title>
-        </DataTable.Header>
-
-        {filtered.map((item) => (
-          <DataTable.Row key={item.id}>
-            <DataTable.Cell>{item.name}</DataTable.Cell>
-            <DataTable.Cell numeric>${item.price}</DataTable.Cell>
-            <DataTable.Cell numeric>{item.inStock}</DataTable.Cell>
-            <DataTable.Cell>
-              <IconButton
-                icon="pencil"
-                size={16}
-                onPress={() => console.log("Edit", item.id)}
-              />
-              <IconButton
-                icon="delete"
-                size={16}
-                onPress={() => deleteItem(item.id)}
-              />
-            </DataTable.Cell>
-          </DataTable.Row>
-        ))}
-      </DataTable>
-    );
-  };
-
-  const renderListView = () => {
-    return (
-      <FlatList
-        data={filtered}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.listItem}>
-            <Text>{item.name}</Text>
-            <Text>${item.price}</Text>
-            <Text>{item.inStock} in stock</Text>
-            <View style={styles.actions}>
-              <Button onPress={() => console.log("Edit", item.id)}>Edit</Button>
-              <Button onPress={() => deleteItem(item.id)} textColor="red">
-                Delete
-              </Button>
-            </View>
-          </View>
         )}
       />
     );
@@ -241,9 +198,15 @@ export default function InventoryPage() {
 
         <View style={styles.content}>
           {view === "card" && renderCardView()}
-          {view === "table" && renderTableView()}
-          {view === "list" && renderListView()}
         </View>
+
+        {/* Edit Product Modal */}
+        <EditProductModal
+          visible={modalVisible}
+          product={selectedProduct}
+          onClose={() => setModalVisible(false)}
+          onProductUpdated={handleProductUpdated}
+        />
       </View>
     </SafeAreaView>
   );
@@ -309,17 +272,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 8,
     paddingBottom: 8,
-  },
-  listItem: {
-    padding: 12,
-    backgroundColor: "#f8f8f8",
-    marginBottom: 8,
-    borderRadius: 6,
-  },
-  actions: {
-    flexDirection: "row",
-    gap: 8,
-    marginTop: 8,
   },
   badgeContainer: {
     flexDirection: "row",
