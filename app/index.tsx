@@ -58,12 +58,15 @@ export default function index() {
   };
 
   useEffect(() => {
-    // Check if the user is logged in
     const existingUsername = storage.getString("user.username");
 
-    if (existingUsername) {
-      // Redirect to the tabs page
-      return router.push("/(tabs)");
+    if (existingUsername && router) {
+      // Delay navigation until router is ready
+      const timeout = setTimeout(() => {
+        router.push("/(tabs)");
+      }, 100); // short delay to let layout render
+
+      return () => clearTimeout(timeout);
     }
   }, []);
 
