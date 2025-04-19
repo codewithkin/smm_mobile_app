@@ -131,7 +131,11 @@ export default function Dashboard() {
                 </LinearGradient>
 
                 {/* Line chart showing sales */}
-                {data.checkouts && <SalesLineChart sales={data.checkouts} />}
+                {data.checkouts && (
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    <SalesLineChart sales={data.checkouts} />
+                  </ScrollView>
+                )}
               </View>
             )}
           </MotiView>
