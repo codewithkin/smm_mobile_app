@@ -6,6 +6,7 @@ import {
   FlatList,
   Alert,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import {
   Text,
@@ -17,6 +18,7 @@ import {
   DataTable,
   Searchbar,
   Chip,
+  Badge,
 } from "react-native-paper";
 import axios from "axios";
 import { urls } from "@/constants/urls";
@@ -114,15 +116,52 @@ export default function InventoryPage() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
-          <Card style={styles.card}>
-            <Card.Title title={item.name} subtitle={item.brand} />
-            <Card.Content>
-              <Text>In Stock: {item.inStock}</Text>
-              <Text>Price: ${item.price}</Text>
+          <Card mode="outlined" style={styles.card}>
+            {item.images?.[0] && (
+              <Card.Cover
+                source={{ uri: item.images[0] }}
+                style={styles.cardImage}
+                resizeMode="cover"
+              />
+            )}
+
+            <Card.Content style={styles.cardContent}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.productName}>{item.name}</Text>
+                <View style={styles.badgeContainer}>
+                  {item.isNewArrival && (
+                    <Badge style={styles.newBadge}>NEW</Badge>
+                  )}
+                  {item.isFeatured && (
+                    <Badge style={styles.featuredBadge}>FEATURED</Badge>
+                  )}
+                </View>
+              </View>
+
+              <Text style={styles.brandText}>{item.brand}</Text>
+              <Text style={styles.conditionText}>
+                {item.condition === "refurbished" ? "Refurbished" : "Brand New"}
+              </Text>
+
+              <View style={styles.priceStockRow}>
+                <Text style={styles.priceText}>${item.price.toFixed(2)}</Text>
+                <Text style={styles.stockText}>{item.inStock} in stock</Text>
+              </View>
             </Card.Content>
-            <Card.Actions>
-              <Button onPress={() => console.log("Edit", item.id)}>Edit</Button>
-              <Button onPress={() => deleteItem(item.id)} textColor="red">
+
+            <Card.Actions style={styles.cardActions}>
+              <Button
+                mode="outlined"
+                onPress={() => console.log("Edit", item.id)}
+              >
+                Edit
+              </Button>
+              <Button
+                mode="outlined"
+                onPress={() => deleteItem(item.id)}
+                textColor="red"
+                style={{ borderColor: "red" }}
+              >
                 Delete
               </Button>
             </Card.Actions>
@@ -259,7 +298,55 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   card: {
-    marginBottom: 12,
+    marginBottom: 16,
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  cardImage: {
+    height: 160,
+  },
+  cardContent: {
+    paddingTop: 12,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  productName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    flex: 1,
+  },
+  brandText: {
+    fontSize: 14,
+    color: "#6e6e6e",
+    marginTop: 4,
+  },
+  conditionText: {
+    fontSize: 13,
+    color: "#777",
+    marginTop: 4,
+    fontStyle: "italic",
+  },
+  priceStockRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 12,
+  },
+  priceText: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  stockText: {
+    fontSize: 14,
+    color: "#999",
+  },
+  cardActions: {
+    justifyContent: "space-between",
+    paddingHorizontal: 8,
+    paddingBottom: 8,
   },
   listItem: {
     padding: 12,
@@ -280,5 +367,17 @@ const styles = StyleSheet.create({
   },
   chip: {
     marginRight: 8,
+  },
+  badgeContainer: {
+    flexDirection: "row",
+    gap: 6,
+  },
+  newBadge: {
+    backgroundColor: "#007bff",
+    color: "#fff",
+  },
+  featuredBadge: {
+    backgroundColor: "#28a745",
+    color: "#fff",
   },
 });
