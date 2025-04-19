@@ -3,7 +3,9 @@ import { View, StyleSheet, Alert } from "react-native";
 import { DataTable, Text, Button } from "react-native-paper";
 import moment from "moment";
 import ChartContainer from "../shared/ChartContainer";
+import axios from "axios";
 import * as FileSystem from "expo-file-system";
+import { urls } from "@/constants/urls";
 
 interface CheckoutItem {
   id: string;
@@ -34,28 +36,38 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
 
   const paginatedData = data.slice(from, to);
 
+  if (!data || data.length === 0) {
+    return (
+      <ChartContainer>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No receipts found.</Text>
+        </View>
+      </ChartContainer>
+    );
+  }
+
   const downloadReceipt = async (checkoutId: string) => {
     try {
-      const response = await fetch(
-        `http://YOUR_BACKEND_URL/downloadReceipt/${checkoutId}`,
+      const response = await axios.get(
+        `${urls.backendUrl}/checkout/download/${checkoutId}`,
         {
-          method: "GET",
+          responseType: "arraybuffer", // Get the response as ArrayBuffer
         },
       );
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error("Failed to download receipt");
       }
 
-      // Get the receipt file as a Blob
-      const blob = await response.blob();
+      // Convert ArrayBuffer to base64
+      const base64String = arrayBufferToBase64(response.data);
 
-      // Get the file's URI path
+      // Prepare the file URI for saving
       const fileUri =
         FileSystem.documentDirectory + `receipt-${checkoutId}.pdf`;
 
-      // Write the file to the device's file system
-      await FileSystem.writeAsStringAsync(fileUri, await blob.text(), {
+      // Write the Base64 string to the file system
+      await FileSystem.writeAsStringAsync(fileUri, base64String, {
         encoding: FileSystem.EncodingType.Base64,
       });
 
@@ -66,15 +78,15 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
     }
   };
 
-  if (!data || data.length === 0) {
-    return (
-      <ChartContainer>
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No receipts found.</Text>
-        </View>
-      </ChartContainer>
-    );
-  }
+  // Helper function to convert ArrayBuffer to Base64 string
+  const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary); // Use window.btoa to encode the binary string to base64
+  };
 
   return (
     <ChartContainer>
