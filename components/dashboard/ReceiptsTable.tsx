@@ -1,41 +1,43 @@
 import React, { useState } from "react";
-import { View, ScrollView, StyleSheet } from "react-native";
-import { DataTable, Text, IconButton } from "react-native-paper";
+import { View, StyleSheet } from "react-native";
+import { DataTable, Text, Button } from "react-native-paper";
 import moment from "moment";
 import ChartContainer from "../shared/ChartContainer";
 
-interface Receipt {
+interface CheckoutItem {
   id: string;
-  customerName: string;
+  name: string;
+  price: number;
+  quantity: number;
+  productId: string;
+  checkoutId: string;
+}
+
+interface Checkout {
+  id: string;
   total: number;
-  date: string;
-  downloadUrl: string;
+  createdAt: string;
+  items: CheckoutItem[];
 }
 
 interface Props {
-  data: Receipt[];
+  data: Checkout[];
 }
 
 const ReceiptsTable: React.FC<Props> = ({ data }) => {
   const [page, setPage] = useState(0);
-  const itemsPerPage = 5;
+  const rowsPerPage = 5;
 
-  const paginatedData = data.slice(
-    page * itemsPerPage,
-    (page + 1) * itemsPerPage,
-  );
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const from = page * rowsPerPage;
+  const to = Math.min((page + 1) * rowsPerPage, data.length);
 
-  const handleDownload = (url: string) => {
-    // Implement download functionality here
-    console.log(`Downloading receipt from: ${url}`);
-  };
+  const paginatedData = data.slice(from, to);
 
   if (!data || data.length === 0) {
     return (
       <ChartContainer>
         <View style={styles.emptyContainer}>
-          <Text>No receipts available.</Text>
+          <Text style={styles.emptyText}>No receipts found.</Text>
         </View>
       </ChartContainer>
     );
@@ -43,50 +45,43 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
 
   return (
     <ChartContainer>
-      <ScrollView horizontal>
-        <View style={{ maxHeight: 350 }}>
-          <DataTable>
-            <DataTable.Header>
-              <DataTable.Title style={{ width: 200 }}>Customer</DataTable.Title>
-              <DataTable.Title numeric style={{ width: 100 }}>
-                Total ($)
-              </DataTable.Title>
-              <DataTable.Title style={{ width: 160 }}>Date</DataTable.Title>
-              <DataTable.Title style={{ width: 80 }}>Download</DataTable.Title>
-            </DataTable.Header>
+      <DataTable>
+        <DataTable.Header>
+          <DataTable.Title style={{ flex: 2 }}>Date</DataTable.Title>
+          <DataTable.Title numeric>Total ($)</DataTable.Title>
+          <DataTable.Title numeric># Items</DataTable.Title>
+          <DataTable.Title>Action</DataTable.Title>
+        </DataTable.Header>
 
-            {paginatedData.map((receipt) => (
-              <DataTable.Row key={receipt.id}>
-                <DataTable.Cell style={{ width: 200 }}>
-                  {receipt.customerName}
-                </DataTable.Cell>
-                <DataTable.Cell numeric style={{ width: 100 }}>
-                  {receipt.total.toFixed(2)}
-                </DataTable.Cell>
-                <DataTable.Cell style={{ width: 160 }}>
-                  {moment(receipt.date).format("MMM D, YYYY")}
-                </DataTable.Cell>
-                <DataTable.Cell style={{ width: 80 }}>
-                  <IconButton
-                    icon="download"
-                    size={20}
-                    onPress={() => handleDownload(receipt.downloadUrl)}
-                  />
-                </DataTable.Cell>
-              </DataTable.Row>
-            ))}
+        {paginatedData.map((checkout) => (
+          <DataTable.Row key={checkout.id}>
+            <DataTable.Cell style={{ flex: 2 }}>
+              {moment(checkout.createdAt).format("MMM D, YYYY")}
+            </DataTable.Cell>
+            <DataTable.Cell numeric>{checkout.total.toFixed(2)}</DataTable.Cell>
+            <DataTable.Cell numeric>{checkout.items.length}</DataTable.Cell>
+            <DataTable.Cell>
+              <Button
+                compact
+                mode="outlined"
+                onPress={() => console.log("Download", checkout.id)}
+              >
+                Download
+              </Button>
+            </DataTable.Cell>
+          </DataTable.Row>
+        ))}
 
-            <DataTable.Pagination
-              page={page}
-              numberOfPages={totalPages}
-              onPageChange={(newPage) => setPage(newPage)}
-              label={`${page * itemsPerPage + 1}-${Math.min((page + 1) * itemsPerPage, data.length)} of ${data.length}`}
-              showFastPaginationControls
-              style={{ alignSelf: "flex-start" }}
-            />
-          </DataTable>
-        </View>
-      </ScrollView>
+        <DataTable.Pagination
+          page={page}
+          numberOfPages={Math.ceil(data.length / rowsPerPage)}
+          onPageChange={(newPage) => setPage(newPage)}
+          label={`${from + 1}-${to} of ${data.length}`}
+          showFastPaginationControls
+          numberOfItemsPerPage={rowsPerPage}
+          style={styles.pagination}
+        />
+      </DataTable>
     </ChartContainer>
   );
 };
@@ -95,6 +90,13 @@ const styles = StyleSheet.create({
   emptyContainer: {
     padding: 16,
     alignItems: "center",
+  },
+  emptyText: {
+    fontSize: 14,
+    color: "#555",
+  },
+  pagination: {
+    justifyContent: "flex-start",
   },
 });
 

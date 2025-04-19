@@ -152,7 +152,7 @@ export default function Dashboard() {
 
                 {data?.customers && <CustomersTable data={data.customers} />}
 
-                {data?.receipts && <ReceiptsTable data={data.receipts} />}
+                {data?.checkouts && <ReceiptsTable data={data.checkouts} />}
               </View>
             )}
           </MotiView>
