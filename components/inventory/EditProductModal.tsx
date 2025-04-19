@@ -68,7 +68,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
     try {
       const response = await axios.put(
         `${urls.backendUrl}/products/${editedProduct.id}`,
-        editedProduct
+        editedProduct,
       );
       onProductUpdated(response.data);
       onClose(); // Close the modal after saving
@@ -112,7 +112,9 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
                   label="Description"
                   style={styles.input}
                   value={editedProduct.description}
-                  onChangeText={(text) => handleInputChange("description", text)}
+                  onChangeText={(text) =>
+                    handleInputChange("description", text)
+                  }
                   multiline
                   numberOfLines={4}
                 />

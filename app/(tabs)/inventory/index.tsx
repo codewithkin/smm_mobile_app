@@ -9,14 +9,13 @@ import {
   Image,
 } from "react-native";
 import {
-  Text,
+  IconButton,
   SegmentedButtons,
   Card,
-  Button,
-  IconButton,
   DataTable,
   Searchbar,
   Badge,
+  Text,
 } from "react-native-paper";
 import axios from "axios";
 import { urls } from "@/constants/urls";
@@ -158,19 +157,91 @@ export default function InventoryPage() {
             </Card.Content>
 
             <Card.Actions style={styles.cardActions}>
-              <Button mode="outlined" onPress={() => handleEdit(item)}>
-                Edit
-              </Button>
-              <Button
-                mode="outlined"
+              <IconButton
+                icon="pencil"
+                size={20}
+                onPress={() => handleEdit(item)}
+              />
+              <IconButton
+                icon="trash-can"
+                size={20}
                 onPress={() => deleteItem(item.id)}
-                textColor="red"
-                style={{ borderColor: "red" }}
-              >
-                Delete
-              </Button>
+              />
             </Card.Actions>
           </Card>
+        )}
+      />
+    );
+  };
+
+  const renderTableView = () => {
+    if (loading) {
+      return <ActivityIndicator size="large" style={{ marginTop: 20 }} />;
+    }
+
+    return (
+      <DataTable>
+        <DataTable.Header>
+          <DataTable.Title>Name</DataTable.Title>
+          <DataTable.Title>Price</DataTable.Title>
+          <DataTable.Title>Stock</DataTable.Title>
+          <DataTable.Title>Action</DataTable.Title>
+        </DataTable.Header>
+
+        {filtered.map((product) => (
+          <DataTable.Row key={product.id}>
+            <DataTable.Cell>{product.name}</DataTable.Cell>
+            <DataTable.Cell>${product.price.toFixed(2)}</DataTable.Cell>
+            <DataTable.Cell>{product.inStock}</DataTable.Cell>
+            <DataTable.Cell style={styles.tableActions}>
+              <View style={styles.tableButtons}>
+                <IconButton
+                  icon="pencil"
+                  size={20}
+                  onPress={() => handleEdit(product)}
+                  style={styles.tableButton}
+                />
+                <IconButton
+                  icon="trash-can"
+                  size={20}
+                  onPress={() => deleteItem(product.id)}
+                  style={styles.tableButton}
+                />
+              </View>
+            </DataTable.Cell>
+          </DataTable.Row>
+        ))}
+      </DataTable>
+    );
+  };
+
+  const renderListView = () => {
+    if (loading) {
+      return <ActivityIndicator size="large" style={{ marginTop: 20 }} />;
+    }
+
+    return (
+      <FlatList
+        data={filtered}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.listItem}>
+            <Text>{item.name}</Text>
+            <Text>${item.price.toFixed(2)}</Text>
+            <Text>{item.inStock} in stock</Text>
+            <IconButton
+              icon="pencil"
+              size={20}
+              onPress={() => handleEdit(item)}
+              style={{ marginTop: 8 }}
+            />
+            <IconButton
+              icon="trash-can"
+              size={20}
+              onPress={() => deleteItem(item.id)}
+              style={{ marginTop: 8 }}
+            />
+          </View>
         )}
       />
     );
@@ -198,6 +269,8 @@ export default function InventoryPage() {
 
         <View style={styles.content}>
           {view === "card" && renderCardView()}
+          {view === "table" && renderTableView()}
+          {view === "list" && renderListView()}
         </View>
 
         {/* Edit Product Modal */}
@@ -214,6 +287,7 @@ export default function InventoryPage() {
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 56,
     padding: 16,
   },
   content: {
@@ -221,6 +295,11 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: 12,
+  },
+  listItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
   },
   card: {
     marginBottom: 16,
@@ -236,53 +315,57 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
+    alignItems: "center",
   },
   productName: {
     fontSize: 18,
     fontWeight: "bold",
-    flex: 1,
-  },
-  brandText: {
-    fontSize: 14,
-    color: "#6e6e6e",
-    marginTop: 4,
-  },
-  conditionText: {
-    fontSize: 13,
-    color: "#777",
-    marginTop: 4,
-    fontStyle: "italic",
-  },
-  priceStockRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 12,
-  },
-  priceText: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  stockText: {
-    fontSize: 14,
-    color: "#999",
-  },
-  cardActions: {
-    justifyContent: "space-between",
-    paddingHorizontal: 8,
-    paddingBottom: 8,
   },
   badgeContainer: {
     flexDirection: "row",
-    gap: 6,
   },
   newBadge: {
-    backgroundColor: "#007bff",
-    color: "#fff",
+    marginRight: 8,
   },
   featuredBadge: {
-    backgroundColor: "#28a745",
-    color: "#fff",
+    marginRight: 8,
+  },
+  brandText: {
+    fontSize: 14,
+    color: "#888",
+    marginTop: 4,
+  },
+  conditionText: {
+    fontSize: 14,
+    color: "#888",
+    marginTop: 4,
+  },
+  priceStockRow: {
+    marginTop: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  priceText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  stockText: {
+    fontSize: 14,
+    color: "#888",
+  },
+  cardActions: {
+    paddingTop: 8,
+    justifyContent: "space-between",
+  },
+  tableActions: {
+    alignItems: "flex-end",
+  },
+  tableButtons: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  tableButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
   },
 });
