@@ -8,7 +8,7 @@ export default function NewProductFAB() {
       icon="plus"
       style={styles.fab}
       onPress={() => {
-        router.push("/inventory/new");
+        router.push("/new");
       }}
       label="Add Product"
       animated={true}
