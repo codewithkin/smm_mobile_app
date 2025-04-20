@@ -6,7 +6,6 @@ import {
   FlatList,
   Alert,
   ActivityIndicator,
-  Image,
 } from "react-native";
 import {
   IconButton,
@@ -21,7 +20,6 @@ import axios from "axios";
 import { urls } from "@/constants/urls";
 import { Toast } from "toastify-react-native";
 import { EditProductModal } from "@/components/inventory/EditProductModal";
-import NewStuffFAB from "@/components/NewStuffFAB";
 
 interface Product {
   id: string;
@@ -257,8 +255,6 @@ export default function InventoryPage() {
           onChangeText={setSearchQuery}
           style={{ marginBottom: 12 }}
         />
-
-        <NewStuffFAB />
 
         <SegmentedButtons
           value={view}
