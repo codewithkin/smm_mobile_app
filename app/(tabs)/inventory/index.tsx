@@ -15,6 +15,7 @@ import {
   Searchbar,
   Badge,
   Text,
+  Button,
 } from "react-native-paper";
 import axios from "axios";
 import { urls } from "@/constants/urls";
@@ -225,21 +226,39 @@ export default function InventoryPage() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.listItem}>
-            <Text>{item.name}</Text>
-            <Text>${item.price.toFixed(2)}</Text>
+            <Text
+              style={{
+                fontSize: 20,
+                marginBottom: 4,
+                fontWeight: "800",
+              }}
+            >
+              {item.name}
+            </Text>
+            <Text
+              style={{
+                fontWeight: "700",
+              }}
+            >
+              ${item.price.toFixed(2)}
+            </Text>
             <Text>{item.inStock} in stock</Text>
-            <IconButton
+            <Button
               icon="pencil"
-              size={20}
               onPress={() => handleEdit(item)}
+              mode="contained"
               style={{ marginTop: 8 }}
-            />
-            <IconButton
+            >
+              Edit
+            </Button>
+            <Button
               icon="trash-can"
-              size={20}
+              textColor="red"
               onPress={() => deleteItem(item.id)}
               style={{ marginTop: 8 }}
-            />
+            >
+              Delete
+            </Button>
           </View>
         )}
       />
