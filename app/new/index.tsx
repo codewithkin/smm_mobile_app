@@ -1,17 +1,9 @@
 import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Alert,
-  Image,
-  Platform,
-} from "react-native";
+import { View, StyleSheet, ScrollView, Alert, Image } from "react-native";
 import {
   TextInput,
   Button,
   Text,
-  HelperText,
   RadioButton,
   Switch,
 } from "react-native-paper";
@@ -235,6 +227,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     paddingBottom: 32,
+    marginVertical: 40,
   },
   title: {
     marginBottom: 16,
