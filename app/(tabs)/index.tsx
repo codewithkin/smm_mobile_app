@@ -8,11 +8,13 @@ import { urls } from "@/constants/urls";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { LinearGradient } from "expo-linear-gradient";
-import { Text } from "react-native-paper";
+import { FAB, Text } from "react-native-paper";
 import SalesLineChart from "@/components/dashboard/SalesLineChart";
 import ProductsByCategoryChart from "@/components/dashboard/ProductsByCategoryChart";
 import CustomersTable from "@/components/dashboard/CustomersTable";
 import ReceiptsTable from "@/components/dashboard/ReceiptsTable";
+import { router } from "expo-router";
+import NewProductFAB from "@/components/shared/NewProductFAB";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -158,6 +160,8 @@ export default function Dashboard() {
           </MotiView>
         </View>
       </ScrollView>
+
+      <NewProductFAB />
     </SafeAreaView>
   );
 }
