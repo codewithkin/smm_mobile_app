@@ -2,23 +2,25 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Image } from "react-native";
 import { Text, Button, Icon } from "react-native-paper";
 import NetInfo from "@react-native-community/netinfo";
+import { Toast } from "toastify-react-native";
 
 const OfflineScreen: React.FC<{ onRetry?: () => void }> = ({ onRetry }) => {
   const [checking, setChecking] = useState(false);
 
-  const handleRetry = async () => {
-    setChecking(true);
-    const state = await NetInfo.fetch();
-    if (state.isConnected && onRetry) {
-      onRetry(); // let the wrapper handle re-render
-    }
-    setChecking(false);
+  const retryConnection = () => {
+    NetInfo.fetch().then((state: any) => {
+      if (state.isConnected) {
+        // Navigate back or refresh the app
+      } else {
+        Toast.error("Still offline");
+      }
+    });
   };
 
   return (
     <View style={styles.container}>
       <Image
-        source={require("../assets/images/icon.png")} 
+        source={require("../assets/images/icon.png")}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -29,7 +31,7 @@ const OfflineScreen: React.FC<{ onRetry?: () => void }> = ({ onRetry }) => {
       </Text>
       <Button
         mode="contained"
-        onPress={handleRetry}
+        onPress={retryConnection}
         loading={checking}
         style={styles.button}
       >

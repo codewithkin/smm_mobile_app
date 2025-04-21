@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import NetInfo from "@react-native-community/netinfo";
 import OfflineScreen from "../screens/OfflineScreen";
 
-const OfflineWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const OfflineWrapper: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [isConnected, setIsConnected] = useState<boolean>(true);
 
   const checkConnection = async () => {
