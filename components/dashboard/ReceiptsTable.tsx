@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Alert, ScrollView } from "react-native";
+import { View, StyleSheet, Alert } from "react-native";
 import { DataTable, Text, Button } from "react-native-paper";
 import moment from "moment";
 import ChartContainer from "../shared/ChartContainer";
@@ -49,8 +49,10 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
   const downloadReceipt = async (checkoutId: string) => {
     try {
       const response = await axios.get(
-        `${urls.backendUrl}/checkout/download/${checkoutId}`,
-        { responseType: "arraybuffer" },
+        `${urls.backendUrl}/checkout/${checkoutId}/download`,
+        {
+          responseType: "arraybuffer",
+        }
       );
 
       if (response.status !== 200) {
@@ -58,8 +60,7 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
       }
 
       const base64String = arrayBufferToBase64(response.data);
-      const fileUri =
-        FileSystem.documentDirectory + `receipt-${checkoutId}.pdf`;
+      const fileUri = FileSystem.documentDirectory + `receipt-${checkoutId}.pdf`;
 
       await FileSystem.writeAsStringAsync(fileUri, base64String, {
         encoding: FileSystem.EncodingType.Base64,
@@ -78,68 +79,57 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
     for (let i = 0; i < bytes.length; i++) {
       binary += String.fromCharCode(bytes[i]);
     }
-    return window.btoa(binary);
+    return global.btoa(binary); // Use global.btoa instead of window in React Native
   };
 
   return (
     <ChartContainer>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <DataTable style={styles.table}>
-          <DataTable.Header>
-            <DataTable.Title style={styles.dateColumn}>Date</DataTable.Title>
-            <DataTable.Title style={styles.amountColumn} numeric>
-              Total ($)
-            </DataTable.Title>
-            <DataTable.Title style={styles.itemsColumn} numeric>
-              # Items
-            </DataTable.Title>
-            <DataTable.Title style={styles.actionColumn}>
-              Action
-            </DataTable.Title>
-          </DataTable.Header>
+      <DataTable>
+        <DataTable.Header>
+          <DataTable.Title style={{ flex: 2.5 }}>Date</DataTable.Title>
+          <DataTable.Title style={{ flex: 1.5 }} numeric>Total ($)</DataTable.Title>
+          <DataTable.Title style={{ flex: 1 }} numeric># Items</DataTable.Title>
+          <DataTable.Title style={{ flex: 1.5 }}>Action</DataTable.Title>
+        </DataTable.Header>
 
-          {paginatedData.map((checkout) => (
-            <DataTable.Row key={checkout.id}>
-              <DataTable.Cell style={styles.dateColumn}>
-                {moment(checkout.createdAt).format("MMM D")}
-              </DataTable.Cell>
-              <DataTable.Cell style={styles.amountColumn} numeric>
-                {checkout.total.toFixed(2)}
-              </DataTable.Cell>
-              <DataTable.Cell style={styles.itemsColumn} numeric>
-                {checkout.items.length}
-              </DataTable.Cell>
-              <DataTable.Cell style={styles.actionColumn}>
-                <Button
-                  compact
-                  mode="outlined"
-                  onPress={() => downloadReceipt(checkout.id)}
-                >
-                  Download
-                </Button>
-              </DataTable.Cell>
-            </DataTable.Row>
-          ))}
+        {paginatedData.map((checkout) => (
+          <DataTable.Row key={checkout.id}>
+            <DataTable.Cell style={{ flex: 2.5 }}>
+              {moment(checkout.createdAt).format("MMM D")}
+            </DataTable.Cell>
+            <DataTable.Cell style={{ flex: 1.5 }} numeric>
+              {checkout.total.toFixed(2)}
+            </DataTable.Cell>
+            <DataTable.Cell style={{ flex: 1 }} numeric>
+              {checkout.items.length}
+            </DataTable.Cell>
+            <DataTable.Cell style={{ flex: 1.5 }}>
+              <Button
+                compact
+                mode="outlined"
+                onPress={() => downloadReceipt(checkout.id)}
+              >
+                Download
+              </Button>
+            </DataTable.Cell>
+          </DataTable.Row>
+        ))}
 
-          <DataTable.Pagination
-            page={page}
-            numberOfPages={Math.ceil(data.length / rowsPerPage)}
-            onPageChange={(newPage) => setPage(newPage)}
-            label={`${from + 1}-${to} of ${data.length}`}
-            showFastPaginationControls
-            numberOfItemsPerPage={rowsPerPage}
-            style={styles.pagination}
-          />
-        </DataTable>
-      </ScrollView>
+        <DataTable.Pagination
+          page={page}
+          numberOfPages={Math.ceil(data.length / rowsPerPage)}
+          onPageChange={(newPage) => setPage(newPage)}
+          label={`${from + 1}-${to} of ${data.length}`}
+          showFastPaginationControls
+          numberOfItemsPerPage={rowsPerPage}
+          style={styles.pagination}
+        />
+      </DataTable>
     </ChartContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  table: {
-    minWidth: 600,
-  },
   emptyContainer: {
     padding: 16,
     alignItems: "center",
@@ -150,21 +140,6 @@ const styles = StyleSheet.create({
   },
   pagination: {
     justifyContent: "flex-start",
-  },
-  dateColumn: {
-    flex: 2,
-  },
-  amountColumn: {
-    flex: 1.5,
-    justifyContent: "flex-end",
-  },
-  itemsColumn: {
-    flex: 1.2,
-    justifyContent: "flex-end",
-  },
-  actionColumn: {
-    flex: 2,
-    justifyContent: "center",
   },
 });
 
