@@ -18,7 +18,7 @@ const OfflineScreen: React.FC<{ onRetry?: () => void }> = ({ onRetry }) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require("../assets/images/icon.png")} // Replace with your actual logo path
+        source={require("../assets/images/icon.png")} 
         style={styles.logo}
         resizeMode="contain"
       />

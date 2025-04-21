@@ -11,7 +11,7 @@ import "react-native-reanimated";
 import { PaperProvider, DefaultTheme } from "react-native-paper";
 import ToastManager from "toastify-react-native";
 import { colors } from "../constants/colors";
-import { OfflineWrapper } from "@/screens/NetWrapper";
+import OfflineWrapper from "@/screens/NetWrapper";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
