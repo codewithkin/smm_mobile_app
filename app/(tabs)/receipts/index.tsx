@@ -7,13 +7,19 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
-import { Card, Title, Paragraph, DataTable, FAB } from "react-native-paper";
+import {
+  Card,
+  Title,
+  Paragraph,
+  DataTable,
+  FAB,
+  Button as PaperButton,
+} from "react-native-paper";
 import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { urls } from "@/constants/urls";
-import { Button } from "react-native-paper";
 import { router } from "expo-router";
 
 export default function ReceiptsPage() {
@@ -36,7 +42,6 @@ export default function ReceiptsPage() {
         setReceiptData(allReceipts);
         setFiltered(allReceipts);
 
-        // Categorize receipts
         const manual = allReceipts.filter((r) => r.source === "manual").length;
         const web = allReceipts.filter((r) => r.source === "web").length;
         const device = allReceipts.filter((r) => r.source === "device").length;
@@ -59,15 +64,11 @@ export default function ReceiptsPage() {
     try {
       const fileUri = FileSystem.documentDirectory + "receipt.pdf";
       const { uri } = await FileSystem.downloadAsync(url, fileUri);
-      console.log("Receipt download url: ", url);
-
       await Sharing.shareAsync(uri);
     } catch (error) {
       console.error("Download error:", error);
     }
   };
-
-  console.log("RECEIPTS: ", filtered);
 
   const handleSearch = (text: string) => {
     setSearch(text);
@@ -86,7 +87,6 @@ export default function ReceiptsPage() {
         </Text>
         <Text style={styles.subheading}>Manage and download your receipts</Text>
 
-        {/* 🔍 Search Input */}
         <TextInput
           placeholder="Search by receipt ID..."
           style={styles.searchInput}
@@ -94,7 +94,6 @@ export default function ReceiptsPage() {
           onChangeText={handleSearch}
         />
 
-        {/* 📊 Summary Cards */}
         <Text style={styles.sectionTitle}>Receipt Sources</Text>
         <View style={styles.cardsContainer}>
           <StatCard
@@ -137,7 +136,6 @@ export default function ReceiptsPage() {
           />
         </View>
 
-        {/* 📋 Receipts Table */}
         <Text style={styles.sectionTitle}>All Receipts</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <DataTable style={styles.table}>
@@ -156,61 +154,82 @@ export default function ReceiptsPage() {
                 </DataTable.Cell>
                 <DataTable.Cell numeric>${receipt.total}</DataTable.Cell>
                 <DataTable.Cell>
-                  <Button
-                    onPress={() => {
-                      handleDownload(receipt.downloadUrl);
-                    }}
+                  <PaperButton
+                    onPress={() => handleDownload(receipt.downloadUrl)}
                   >
                     <FontAwesome5 name="download" size={18} color="#1890ff" />
-                  </Button>
+                  </PaperButton>
                 </DataTable.Cell>
               </DataTable.Row>
             ))}
           </DataTable>
         </ScrollView>
 
-        {/* ❌ No Results Message */}
         {filtered.length === 0 && (
           <Text style={styles.noResults}>No receipt matches this ID.</Text>
         )}
 
-        {/* 🧾 Receipt Cards */}
         <Text style={styles.sectionTitle}>Receipt Cards</Text>
         <View style={styles.receiptCardContainer}>
-          {filtered.map((receipt, index) => (
-            <Card style={styles.receiptCard} key={index}>
+          {filtered.map((receipt) => (
+            <Card style={styles.receiptCard} key={receipt.id}>
               <Card.Content>
-                <Title>#{receipt.id.slice(0, 6)}</Title>
-                <Paragraph>
-                  Date: {new Date(receipt.createdAt).toLocaleDateString()}
-                </Paragraph>
-                <Paragraph>Total: ${receipt.total}</Paragraph>
+                <Text style={styles.shopName}>Smart Switch Mobile</Text>
+                <Text style={styles.receiptId}>
+                  Receipt number:{" "}
+                  <Text style={styles.receiptIdMuted}>{receipt.id}</Text>
+                </Text>
+
+                <Text style={styles.receiptDate}>
+                  Date:{" "}
+                  {new Date(receipt.createdAt).toLocaleDateString("en-ZW", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </Text>
+
+                <View style={{ marginTop: 12 }}>
+                  <Text style={styles.itemsHeader}>Items:</Text>
+                  {receipt.items.map((item: any) => (
+                    <Text style={styles.item} key={item.id}>
+                      • {item.name} (x{item.quantity}) - $
+                      {(item.price * item.quantity).toFixed(2)}
+                    </Text>
+                  ))}
+                </View>
+
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>Total:</Text>
+                  <Text style={styles.totalValue}>${receipt.total}</Text>
+                </View>
+
                 <TouchableOpacity
-                  onPress={() => {
-                    console.log("Receipt url: ", receipt.downloadUrl);
-                    handleDownload(`${urls.backendUrl}/${receipt.downloadUrl}`);
-                  }}
+                  onPress={() =>
+                    handleDownload(`${urls.backendUrl}/${receipt.downloadUrl}`)
+                  }
                 >
                   <View style={styles.downloadBtn}>
                     <FontAwesome5 name="download" size={16} color="white" />
-                    <Text style={styles.downloadText}>Download</Text>
+                    <Text style={styles.downloadText}>Download Receipt</Text>
                   </View>
                 </TouchableOpacity>
+
+                <Text style={styles.footerText}>
+                  Shop #18 2nd Floor Meikles Market, Mutare, Zimbabwe
+                </Text>
               </Card.Content>
             </Card>
           ))}
         </View>
       </ScrollView>
 
-      {/* ➕ Floating Action Button */}
       <FAB
         style={styles.fab}
         small
         icon="plus"
         label="Add Receipt"
-        onPress={() => {
-          router.push("/receipts/new");
-        }}
+        onPress={() => router.push("/receipts/new")}
       />
     </View>
   );
@@ -286,37 +305,93 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     minWidth: 600,
   },
-  receiptCardContainer: {
-    flex: 1,
-    flexWrap: "wrap",
-    gap: 15,
-    marginTop: 15,
-  },
-  receiptCard: {
-    backgroundColor: "#f6ffed",
-    borderRadius: 12,
-    paddingVertical: 10,
-    marginBottom: 10,
-  },
-  downloadBtn: {
-    marginTop: 10,
-    backgroundColor: "#52c41a",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  downloadText: {
-    color: "white",
-    fontWeight: "600",
-  },
   noResults: {
     textAlign: "center",
     fontSize: 16,
     color: "gray",
     marginVertical: 20,
+  },
+  receiptCardContainer: {
+    gap: 16,
+    marginBottom: 50,
+  },
+  receiptCard: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  shopName: {
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 6,
+    color: "#111",
+  },
+  receiptId: {
+    fontSize: 14,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  receiptIdMuted: {
+    color: "#888",
+    fontSize: 13,
+  },
+  receiptDate: {
+    fontSize: 13,
+    color: "#666",
+    marginBottom: 12,
+  },
+  itemsHeader: {
+    fontWeight: "600",
+    marginBottom: 6,
+    fontSize: 14,
+  },
+  item: {
+    fontSize: 13,
+    color: "#444",
+  },
+  totalRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
+    marginBottom: 10,
+  },
+  totalLabel: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  totalValue: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#007acc",
+  },
+  downloadBtn: {
+    marginTop: 10,
+    backgroundColor: "#007acc",
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    alignSelf: "flex-start",
+  },
+  downloadText: {
+    color: "white",
+    fontWeight: "600",
+  },
+  footerText: {
+    textAlign: "center",
+    fontSize: 12,
+    marginTop: 16,
+    color: "#888",
   },
   fab: {
     position: "absolute",
