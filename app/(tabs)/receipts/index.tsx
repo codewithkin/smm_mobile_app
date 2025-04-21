@@ -14,6 +14,7 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { urls } from "@/constants/urls";
 import { Button } from "react-native-paper";
+import { router } from "expo-router";
 
 export default function ReceiptsPage() {
   const [receiptData, setReceiptData] = useState<any[]>([]);
@@ -207,7 +208,9 @@ export default function ReceiptsPage() {
         small
         icon="plus"
         label="Add Receipt"
-        onPress={() => console.log("Add receipt tapped")}
+        onPress={() => {
+          router.push("/receipts/new/index");
+        }}
       />
     </View>
   );
