@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import {Toast} from "toastify-react-native";
+import { Toast } from "toastify-react-native";
 import {
   Text,
   TextInput,
