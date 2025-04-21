@@ -19,6 +19,7 @@ import {
 import * as Sharing from "expo-sharing";
 import * as Print from "expo-print";
 import * as FileSystem from "expo-file-system";
+import { Stack } from "expo-router";
 
 interface Item {
   name: string;
@@ -191,7 +192,7 @@ const AddReceiptScreen: React.FC = () => {
                     FileSystem.documentDirectory +
                     `receipt_${lastReceiptId}.pdf`;
                   const downloadResumable = FileSystem.createDownloadResumable(
-                    `${urls.backendUrl}/checkout/download/${lastReceiptId}`,
+                    `${urls.backendUrl}/checkout/${lastReceiptId}/download`,
                     fileUri,
                   );
 
