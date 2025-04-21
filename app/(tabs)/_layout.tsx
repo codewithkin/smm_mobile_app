@@ -36,7 +36,7 @@ export default function TabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="customers/index"
         options={{
           title: "Customers",
@@ -48,7 +48,7 @@ export default function TabsLayout() {
             />
           ),
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="receipts/index"
         options={{
