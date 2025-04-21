@@ -11,6 +11,7 @@ import "react-native-reanimated";
 import { PaperProvider, DefaultTheme } from "react-native-paper";
 import ToastManager from "toastify-react-native";
 import { colors } from "../constants/colors";
+import { OfflineWrapper } from "@/screens/NetWrapper";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -43,18 +44,20 @@ export default function RootLayout() {
   }
 
   return (
-    <PaperProvider theme={lightTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="new/index" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="receipts/new/index"
-          options={{ headerShown: true, headerTitle: "Add a new receipt" }}
-        />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-      <ToastManager />
-      <StatusBar style="auto" />
-    </PaperProvider>
+    <OfflineWrapper>
+      <PaperProvider theme={lightTheme}>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="new/index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="receipts/new/index"
+            options={{ headerShown: true, headerTitle: "Add a new receipt" }}
+          />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+        <ToastManager />
+        <StatusBar style="auto" />
+      </PaperProvider>
+    </OfflineWrapper>
   );
 }

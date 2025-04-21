@@ -228,7 +228,9 @@ const AddReceiptScreen: React.FC = () => {
               <Card.Title title="🎉 Receipt Created!" />
               <Card.Content>
                 <Text>✅ Receipt ID: {receipt?.id}</Text>
-                <Text>📅 Date: {new Date(receipt?.createdAt!).toDateString()}</Text>
+                <Text>
+                  📅 Date: {new Date(receipt?.createdAt!).toDateString()}
+                </Text>
                 <Text>🧾 Total: ${receipt?.total.toFixed(2)}</Text>
                 <Text style={{ marginTop: 10, fontWeight: "bold" }}>
                   Items:
@@ -240,7 +242,11 @@ const AddReceiptScreen: React.FC = () => {
                 ))}
               </Card.Content>
               <Card.Actions style={{ flexDirection: "column", gap: 8 }}>
-                <Button icon="download" mode="outlined" onPress={downloadAndShare}>
+                <Button
+                  icon="download"
+                  mode="outlined"
+                  onPress={downloadAndShare}
+                >
                   Download / Share PDF
                 </Button>
                 <Button icon="printer" mode="outlined" onPress={printReceipt}>
@@ -261,11 +267,7 @@ const AddReceiptScreen: React.FC = () => {
           </>
         )}
 
-        <Snackbar
-          visible={success}
-          onDismiss={() => {}}
-          duration={2000}
-        >
+        <Snackbar visible={success} onDismiss={() => {}} duration={2000}>
           Receipt submitted successfully!
         </Snackbar>
       </ScrollView>
