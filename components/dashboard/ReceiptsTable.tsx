@@ -5,6 +5,7 @@ import moment from "moment";
 import ChartContainer from "../shared/ChartContainer";
 import axios from "axios";
 import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 import { urls } from "@/constants/urls";
 
 interface CheckoutItem {
@@ -33,20 +34,9 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
 
   const from = page * rowsPerPage;
   const to = Math.min((page + 1) * rowsPerPage, data.length);
-
   const paginatedData = data.slice(from, to);
 
-  if (!data || data.length === 0) {
-    return (
-      <ChartContainer>
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No receipts found.</Text>
-        </View>
-      </ChartContainer>
-    );
-  }
-
-  const downloadReceipt = async (checkoutId: string) => {
+  const downloadAndShareReceipt = async (checkoutId: string) => {
     try {
       const response = await axios.get(
         `${urls.backendUrl}/checkout/${checkoutId}/download`,
@@ -60,14 +50,20 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
       }
 
       const base64String = arrayBufferToBase64(response.data);
-      const fileUri = FileSystem.documentDirectory + `receipt-${checkoutId}.pdf`;
+
+      const fileUri =
+        FileSystem.documentDirectory + `receipt-${checkoutId}.pdf`;
 
       await FileSystem.writeAsStringAsync(fileUri, base64String, {
         encoding: FileSystem.EncodingType.Base64,
       });
 
-      Alert.alert("Success", "Receipt downloaded successfully.");
-      console.log("Receipt saved to:", fileUri);
+      if (!(await Sharing.isAvailableAsync())) {
+        Alert.alert("Sharing not available on this device");
+        return;
+      }
+
+      await Sharing.shareAsync(fileUri);
     } catch (error: any) {
       Alert.alert("Error", error.message || "Something went wrong");
     }
@@ -79,35 +75,47 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
     for (let i = 0; i < bytes.length; i++) {
       binary += String.fromCharCode(bytes[i]);
     }
-    return global.btoa(binary); // Use global.btoa instead of window in React Native
+    return typeof btoa !== "undefined"
+      ? btoa(binary)
+      : Buffer.from(binary, "binary").toString("base64");
   };
+
+  if (!data || data.length === 0) {
+    return (
+      <ChartContainer>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No receipts found.</Text>
+        </View>
+      </ChartContainer>
+    );
+  }
 
   return (
     <ChartContainer>
       <DataTable>
         <DataTable.Header>
-          <DataTable.Title style={{ flex: 2.5 }}>Date</DataTable.Title>
-          <DataTable.Title style={{ flex: 1.5 }} numeric>Total ($)</DataTable.Title>
-          <DataTable.Title style={{ flex: 1 }} numeric># Items</DataTable.Title>
-          <DataTable.Title style={{ flex: 1.5 }}>Action</DataTable.Title>
+          <DataTable.Title style={styles.dateColumn}>Date</DataTable.Title>
+          <DataTable.Title style={styles.totalColumn}>Total ($)</DataTable.Title>
+          <DataTable.Title style={styles.itemsColumn}>Items</DataTable.Title>
+          <DataTable.Title style={styles.actionColumn}>Action</DataTable.Title>
         </DataTable.Header>
 
         {paginatedData.map((checkout) => (
           <DataTable.Row key={checkout.id}>
-            <DataTable.Cell style={{ flex: 2.5 }}>
+            <DataTable.Cell style={styles.dateColumn}>
               {moment(checkout.createdAt).format("MMM D")}
             </DataTable.Cell>
-            <DataTable.Cell style={{ flex: 1.5 }} numeric>
+            <DataTable.Cell style={styles.totalColumn}>
               {checkout.total.toFixed(2)}
             </DataTable.Cell>
-            <DataTable.Cell style={{ flex: 1 }} numeric>
+            <DataTable.Cell style={styles.itemsColumn}>
               {checkout.items.length}
             </DataTable.Cell>
-            <DataTable.Cell style={{ flex: 1.5 }}>
+            <DataTable.Cell style={styles.actionColumn}>
               <Button
                 compact
                 mode="outlined"
-                onPress={() => downloadReceipt(checkout.id)}
+                onPress={() => downloadAndShareReceipt(checkout.id)}
               >
                 Download
               </Button>
@@ -139,6 +147,21 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   pagination: {
+    justifyContent: "flex-start",
+  },
+  dateColumn: {
+    flex: 2,
+  },
+  totalColumn: {
+    flex: 1.2,
+    justifyContent: "flex-end",
+  },
+  itemsColumn: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  actionColumn: {
+    flex: 1.6,
     justifyContent: "flex-start",
   },
 });
