@@ -47,6 +47,10 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="new/index" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="receipts/new/index"
+          options={{ headerShown: true, headerTitle: "Add a new receipt" }}
+        />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
       <ToastManager />
