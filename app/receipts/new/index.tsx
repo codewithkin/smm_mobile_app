@@ -16,6 +16,9 @@ import {
   Divider,
   Snackbar,
 } from "react-native-paper";
+import * as Sharing from "expo-sharing";
+import * as Print from "expo-print";
+import * as FileSystem from "expo-file-system";
 
 interface Item {
   name: string;
@@ -30,6 +33,7 @@ const AddReceiptScreen: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
   const [success, setSuccess] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [lastReceiptId, setLastReceiptId] = useState<string | null>(null);
 
   const handleItemChange = (
     index: number,
@@ -74,26 +78,24 @@ const AddReceiptScreen: React.FC = () => {
         })),
       };
 
-      const response = await fetch(
-        `${urls.backendUrl}/checkout/manual`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
+      const response = await fetch(`${urls.backendUrl}/checkout/manual`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(payload),
+      });
 
-      if (!response.ok) {
-        throw new Error("Failed to submit receipt");
-      }
+      if (!response.ok) throw new Error("Failed to submit receipt");
+
+      const { id } = await response.json();
 
       setSuccess(true);
       setItems([{ name: "", price: "", quantity: "" }]);
-
-      Toast.succes("Receipt created successfully")
       setTotal(0);
+      setLastReceiptId(id);
+
+      Toast.success("Receipt created successfully");
     } catch (error) {
       console.error("Submission error:", error);
     } finally {
@@ -169,15 +171,62 @@ const AddReceiptScreen: React.FC = () => {
         >
           Submit Receipt
         </Button>
-      </ScrollView>
 
-      <Snackbar
-        visible={success}
-        onDismiss={() => setSuccess(false)}
-        duration={3000}
-      >
-        Receipt submitted successfully!
-      </Snackbar>
+        <Snackbar
+          visible={success}
+          onDismiss={() => setSuccess(false)}
+          duration={3000}
+        >
+          Receipt submitted successfully!
+        </Snackbar>
+
+        {lastReceiptId && (
+          <View style={{ paddingTop: 30 }}>
+            <Button
+              icon="download"
+              mode="outlined"
+              onPress={async () => {
+                try {
+                  const fileUri =
+                    FileSystem.documentDirectory +
+                    `receipt_${lastReceiptId}.pdf`;
+                  const downloadResumable = FileSystem.createDownloadResumable(
+                    `${urls.backendUrl}/checkout/download/${lastReceiptId}`,
+                    fileUri,
+                  );
+
+                  const { uri } = await downloadResumable.downloadAsync();
+                  await Sharing.shareAsync(uri);
+                } catch (e) {
+                  console.error("Download/Share failed:", e);
+                }
+              }}
+              style={{ marginBottom: 10 }}
+            >
+              Download / Share Receipt
+            </Button>
+
+            <Button
+              icon="printer"
+              mode="outlined"
+              onPress={async () => {
+                try {
+                  const pdfUri = `${urls.backendUrl}/checkout/download/${lastReceiptId}`;
+                  const { uri } = await FileSystem.downloadAsync(
+                    pdfUri,
+                    FileSystem.documentDirectory + `temp_receipt.pdf`,
+                  );
+                  await Print.printAsync({ uri });
+                } catch (err) {
+                  console.error("Print error:", err);
+                }
+              }}
+            >
+              Print Receipt
+            </Button>
+          </View>
+        )}
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
