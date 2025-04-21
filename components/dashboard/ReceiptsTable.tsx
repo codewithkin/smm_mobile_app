@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, ScrollView } from "react-native";
 import { DataTable, Text, Button } from "react-native-paper";
 import moment from "moment";
 import ChartContainer from "../shared/ChartContainer";
@@ -50,23 +50,17 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
     try {
       const response = await axios.get(
         `${urls.backendUrl}/checkout/download/${checkoutId}`,
-        {
-          responseType: "arraybuffer", // Get the response as ArrayBuffer
-        },
+        { responseType: "arraybuffer" },
       );
 
       if (response.status !== 200) {
         throw new Error("Failed to download receipt");
       }
 
-      // Convert ArrayBuffer to base64
       const base64String = arrayBufferToBase64(response.data);
-
-      // Prepare the file URI for saving
       const fileUri =
         FileSystem.documentDirectory + `receipt-${checkoutId}.pdf`;
 
-      // Write the Base64 string to the file system
       await FileSystem.writeAsStringAsync(fileUri, base64String, {
         encoding: FileSystem.EncodingType.Base64,
       });
@@ -78,60 +72,74 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
     }
   };
 
-  // Helper function to convert ArrayBuffer to Base64 string
   const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
     const bytes = new Uint8Array(buffer);
     let binary = "";
     for (let i = 0; i < bytes.length; i++) {
       binary += String.fromCharCode(bytes[i]);
     }
-    return window.btoa(binary); // Use window.btoa to encode the binary string to base64
+    return window.btoa(binary);
   };
 
   return (
     <ChartContainer>
-      <DataTable>
-        <DataTable.Header>
-          <DataTable.Title style={{ flex: 2 }}>Date</DataTable.Title>
-          <DataTable.Title numeric>Total ($)</DataTable.Title>
-          <DataTable.Title numeric># Items</DataTable.Title>
-          <DataTable.Title>Action</DataTable.Title>
-        </DataTable.Header>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <DataTable style={styles.table}>
+          <DataTable.Header>
+            <DataTable.Title style={styles.dateColumn}>Date</DataTable.Title>
+            <DataTable.Title style={styles.amountColumn} numeric>
+              Total ($)
+            </DataTable.Title>
+            <DataTable.Title style={styles.itemsColumn} numeric>
+              # Items
+            </DataTable.Title>
+            <DataTable.Title style={styles.actionColumn}>
+              Action
+            </DataTable.Title>
+          </DataTable.Header>
 
-        {paginatedData.map((checkout) => (
-          <DataTable.Row key={checkout.id}>
-            <DataTable.Cell style={{ flex: 2 }}>
-              {moment(checkout.createdAt).format("MMM D")}
-            </DataTable.Cell>
-            <DataTable.Cell numeric>{checkout.total.toFixed(2)}</DataTable.Cell>
-            <DataTable.Cell numeric>{checkout.items.length}</DataTable.Cell>
-            <DataTable.Cell>
-              <Button
-                compact
-                mode="outlined"
-                onPress={() => downloadReceipt(checkout.id)}
-              >
-                Download
-              </Button>
-            </DataTable.Cell>
-          </DataTable.Row>
-        ))}
+          {paginatedData.map((checkout) => (
+            <DataTable.Row key={checkout.id}>
+              <DataTable.Cell style={styles.dateColumn}>
+                {moment(checkout.createdAt).format("MMM D")}
+              </DataTable.Cell>
+              <DataTable.Cell style={styles.amountColumn} numeric>
+                {checkout.total.toFixed(2)}
+              </DataTable.Cell>
+              <DataTable.Cell style={styles.itemsColumn} numeric>
+                {checkout.items.length}
+              </DataTable.Cell>
+              <DataTable.Cell style={styles.actionColumn}>
+                <Button
+                  compact
+                  mode="outlined"
+                  onPress={() => downloadReceipt(checkout.id)}
+                >
+                  Download
+                </Button>
+              </DataTable.Cell>
+            </DataTable.Row>
+          ))}
 
-        <DataTable.Pagination
-          page={page}
-          numberOfPages={Math.ceil(data.length / rowsPerPage)}
-          onPageChange={(newPage) => setPage(newPage)}
-          label={`${from + 1}-${to} of ${data.length}`}
-          showFastPaginationControls
-          numberOfItemsPerPage={rowsPerPage}
-          style={styles.pagination}
-        />
-      </DataTable>
+          <DataTable.Pagination
+            page={page}
+            numberOfPages={Math.ceil(data.length / rowsPerPage)}
+            onPageChange={(newPage) => setPage(newPage)}
+            label={`${from + 1}-${to} of ${data.length}`}
+            showFastPaginationControls
+            numberOfItemsPerPage={rowsPerPage}
+            style={styles.pagination}
+          />
+        </DataTable>
+      </ScrollView>
     </ChartContainer>
   );
 };
 
 const styles = StyleSheet.create({
+  table: {
+    minWidth: 600,
+  },
   emptyContainer: {
     padding: 16,
     alignItems: "center",
@@ -142,6 +150,21 @@ const styles = StyleSheet.create({
   },
   pagination: {
     justifyContent: "flex-start",
+  },
+  dateColumn: {
+    flex: 2,
+  },
+  amountColumn: {
+    flex: 1.5,
+    justifyContent: "flex-end",
+  },
+  itemsColumn: {
+    flex: 1.2,
+    justifyContent: "flex-end",
+  },
+  actionColumn: {
+    flex: 2,
+    justifyContent: "center",
   },
 });
 
