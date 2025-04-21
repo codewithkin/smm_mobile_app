@@ -209,7 +209,7 @@ export default function ReceiptsPage() {
         icon="plus"
         label="Add Receipt"
         onPress={() => {
-          router.push("/receipts/new/index");
+          router.push("/receipts/new");
         }}
       />
     </View>
