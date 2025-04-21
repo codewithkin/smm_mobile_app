@@ -1,3 +1,4 @@
+import { urls } from "@/constants/urls";
 import React, { useState } from "react";
 import {
   View,
@@ -6,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import {Toast} from "toastify-react-native";
 import {
   Text,
   TextInput,
@@ -73,7 +75,7 @@ const AddReceiptScreen: React.FC = () => {
       };
 
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/checkout/manual`,
+        `${urls.backendUrl}/checkout/manual`,
         {
           method: "POST",
           headers: {
@@ -89,6 +91,8 @@ const AddReceiptScreen: React.FC = () => {
 
       setSuccess(true);
       setItems([{ name: "", price: "", quantity: "" }]);
+
+      Toast.succes("Receipt created successfully")
       setTotal(0);
     } catch (error) {
       console.error("Submission error:", error);
