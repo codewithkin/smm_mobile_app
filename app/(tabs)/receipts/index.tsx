@@ -13,6 +13,7 @@ import axios from "axios";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { urls } from "@/constants/urls";
+import { Button } from "react-native-paper";
 
 export default function ReceiptsPage() {
   const [receiptData, setReceiptData] = useState<any[]>([]);
@@ -40,8 +41,8 @@ export default function ReceiptsPage() {
         const device = allReceipts.filter((r) => r.source === "device").length;
         const accessories = allReceipts.filter((r) =>
           r.items.some((item: any) =>
-            item.name?.toLowerCase().includes("accessory")
-          )
+            item.name?.toLowerCase().includes("accessory"),
+          ),
         ).length;
 
         setStats({ manual, web, device, accessories });
@@ -57,16 +58,20 @@ export default function ReceiptsPage() {
     try {
       const fileUri = FileSystem.documentDirectory + "receipt.pdf";
       const { uri } = await FileSystem.downloadAsync(url, fileUri);
+      console.log("Receipt download url: ", url);
+
       await Sharing.shareAsync(uri);
     } catch (error) {
       console.error("Download error:", error);
     }
   };
 
+  console.log("RECEIPTS: ", filtered);
+
   const handleSearch = (text: string) => {
     setSearch(text);
     const filteredData = receiptData.filter((r) =>
-      r.id.toLowerCase().includes(text.toLowerCase())
+      r.id.toLowerCase().includes(text.toLowerCase()),
     );
     setFiltered(filteredData);
   };
@@ -80,7 +85,7 @@ export default function ReceiptsPage() {
         </Text>
         <Text style={styles.subheading}>Manage and download your receipts</Text>
 
-        {/* Search Input */}
+        {/* 🔍 Search Input */}
         <TextInput
           placeholder="Search by receipt ID..."
           style={styles.searchInput}
@@ -88,7 +93,7 @@ export default function ReceiptsPage() {
           onChangeText={handleSearch}
         />
 
-        {/* Summary Cards */}
+        {/* 📊 Summary Cards */}
         <Text style={styles.sectionTitle}>Receipt Sources</Text>
         <View style={styles.cardsContainer}>
           <StatCard
@@ -131,7 +136,7 @@ export default function ReceiptsPage() {
           />
         </View>
 
-        {/* Receipts Table */}
+        {/* 📋 Receipts Table */}
         <Text style={styles.sectionTitle}>All Receipts</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <DataTable style={styles.table}>
@@ -150,23 +155,25 @@ export default function ReceiptsPage() {
                 </DataTable.Cell>
                 <DataTable.Cell numeric>${receipt.total}</DataTable.Cell>
                 <DataTable.Cell>
-                  <TouchableOpacity
-                    onPress={() => handleDownload(receipt.downloadUrl)}
+                  <Button
+                    onPress={() => {
+                      handleDownload(receipt.downloadUrl);
+                    }}
                   >
                     <FontAwesome5 name="download" size={18} color="#1890ff" />
-                  </TouchableOpacity>
+                  </Button>
                 </DataTable.Cell>
               </DataTable.Row>
             ))}
           </DataTable>
         </ScrollView>
 
-        {/* No Results Message */}
+        {/* ❌ No Results Message */}
         {filtered.length === 0 && (
           <Text style={styles.noResults}>No receipt matches this ID.</Text>
         )}
 
-        {/* Receipt Cards */}
+        {/* 🧾 Receipt Cards */}
         <Text style={styles.sectionTitle}>Receipt Cards</Text>
         <View style={styles.receiptCardContainer}>
           {filtered.map((receipt, index) => (
@@ -178,7 +185,10 @@ export default function ReceiptsPage() {
                 </Paragraph>
                 <Paragraph>Total: ${receipt.total}</Paragraph>
                 <TouchableOpacity
-                  onPress={() => handleDownload(receipt.downloadUrl)}
+                  onPress={() => {
+                    console.log("Receipt url: ", receipt.downloadUrl);
+                    handleDownload(`${urls.backendUrl}/${receipt.downloadUrl}`);
+                  }}
                 >
                   <View style={styles.downloadBtn}>
                     <FontAwesome5 name="download" size={16} color="white" />
@@ -191,7 +201,7 @@ export default function ReceiptsPage() {
         </View>
       </ScrollView>
 
-      {/* Floating Action Button */}
+      {/* ➕ Floating Action Button */}
       <FAB
         style={styles.fab}
         small
