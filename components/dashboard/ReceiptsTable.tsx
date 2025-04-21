@@ -42,7 +42,7 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
         `${urls.backendUrl}/checkout/${checkoutId}/download`,
         {
           responseType: "arraybuffer",
-        }
+        },
       );
 
       if (response.status !== 200) {
@@ -95,7 +95,9 @@ const ReceiptsTable: React.FC<Props> = ({ data }) => {
       <DataTable>
         <DataTable.Header>
           <DataTable.Title style={styles.dateColumn}>Date</DataTable.Title>
-          <DataTable.Title style={styles.totalColumn}>Total ($)</DataTable.Title>
+          <DataTable.Title style={styles.totalColumn}>
+            Total ($)
+          </DataTable.Title>
           <DataTable.Title style={styles.itemsColumn}>Items</DataTable.Title>
           <DataTable.Title style={styles.actionColumn}>Action</DataTable.Title>
         </DataTable.Header>
